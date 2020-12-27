@@ -104,7 +104,6 @@
             this.button5.TabIndex = 8;
             this.button5.Text = "获取负荷";
             this.button5.UseVisualStyleBackColor = true;
-            this.button5.Visible = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button6
@@ -115,7 +114,6 @@
             this.button6.TabIndex = 9;
             this.button6.Text = "吹灰器状态更新";
             this.button6.UseVisualStyleBackColor = true;
-            this.button6.Visible = false;
             this.button6.Click += new System.EventHandler(this.button6_Click);
             // 
             // timer1
@@ -156,7 +154,7 @@
             // timer2
             // 
             this.timer2.Enabled = true;
-            this.timer2.Interval = 30000;
+            this.timer2.Interval = 10000;
             this.timer2.Tick += new System.EventHandler(this.Timer2_Tick);
             // 
             // Form2

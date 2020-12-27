@@ -104,7 +104,7 @@ namespace jinjieapp
 
         private JToken JinJieHttp(string dt_pk, string ptype)
         {
-            string para2 = "{\"tags\":[{\"items\":[\"" + ptype + "\"],\"namespace\": \"" + nspace + "\",\"tag\":\"" + dt_pk + "\"}]";
+            string para2 = "{\"tags\":[{\"items\":[\"" + ptype + "\"],\"namespace\": \"" + nspace + "\",\"tag\":\"" + dt_pk + "\"}]}";
             string url_realdata =  "/macs/v1/realtime/read/findPoints";//锦界
             String r2 = HttpHelpercs.HttpPost(url_realdata, para2);
             JObject rt2 = (JObject)JsonConvert.DeserializeObject(r2);
@@ -317,7 +317,7 @@ namespace jinjieapp
         private string fhtag = "AMGENMW";
         private void GetFH(DBHelper db)
         {
-
+            realtime = DateTime.Now;
             JToken jt = JinJieHttp(fhtag, "AV");
             double value2 = 0d;
             var item = jt[0];
