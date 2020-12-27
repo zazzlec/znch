@@ -1185,7 +1185,7 @@
       <div :class="pageview==2?'t2 c':'t2'" @click="chooceview(2)">2D</div>
     </div>
 
-    <div class="viewway2" >
+    <!--<div class="viewway2" :style="{display:pageview==3?'':'none'}">
       <div class="l">水冷壁周期性吹灰</div><div class="r">
       <i-switch true-color="#13ce66" false-color="#ff4949" 
                 size="large"
@@ -1193,7 +1193,7 @@
         <span slot="open">开</span>
         <span slot="close">关</span>
       </i-switch></div>
-    </div>
+    </div>-->
 
     
     <!-- 吹灰侧边栏 -->
@@ -1534,7 +1534,7 @@ export default {
             return o.ljzcolorstep[o.ljz-c]; 
           }
         }else{
-          return '#ffffff';
+          return '#000000';
         }
         
         
@@ -3177,9 +3177,9 @@ export default {
       getBoilerListAll().then(res => {
           o.boilers=getDateMore(res.data.data,-1,["syntime",]);
           if(o.boilerid==-1){
-            o.boiler=o.boilers[2].k_Name_kw;
-            o.boilerid=o.boilers[2].id;
-            o.boilertime=o.boilers[2].syntime;
+            o.boiler=o.boilers[0].k_Name_kw;
+            o.boilerid=o.boilers[0].id;
+            o.boilertime=o.boilers[0].syntime;
           }else{
             o.boilers.map(x=>{
               if(x.id==o.boilerid){
