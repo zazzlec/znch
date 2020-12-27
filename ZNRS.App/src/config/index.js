@@ -19,15 +19,19 @@ export default {
   baseUrl: {
     dev: 'http://localhost:54321/',
     pro: 'http://localhost:54321/',
-     //dev: 'http://10.24.127.101:5000/',
-     //pro: 'http://10.24.127.101:5000/',
-    defaultPrefix:"api/v1/"
+    //dev: 'http://132.0.5.21:5000/',//5号炉
+    //pro: 'http://132.0.5.21:5000/',//5号炉
+    //dev: 'http://132.0.6.21:5000/',//6号炉
+    //pro: 'http://132.0.6.21:5000/',//6号炉
+    defaultPrefix: "api/v1/"
   },
   authUrl: {
     dev: 'http://localhost:54321/api/oauth/auth',
     pro: 'http://localhost:54321/api/oauth/auth'
-     //dev: 'http://10.24.127.101:5000/api/oauth/auth',
-     //pro: 'http://10.24.127.101:5000/api/oauth/auth'
+    //dev: 'http://132.0.5.21:5000/api/oauth/auth',//5号炉
+    //pro: 'http://132.0.5.21:5000/api/oauth/auth'//5号炉
+    //dev: 'http://132.0.6.21:5000/api/oauth/auth',//6号炉
+    //pro: 'http://132.0.6.21:5000/api/oauth/auth'//6号炉
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home
