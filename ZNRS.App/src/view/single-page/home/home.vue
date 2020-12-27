@@ -1,4 +1,4 @@
-<style  lang="less">
+﻿<style  lang="less">
 @size : 120px;
 .home{
   .kz{
@@ -65,7 +65,6 @@
 import InforCard from '_c/info-card'
 import CountTo from '_c/count-to'
 import { ChartPie, ChartBar } from '_c/charts'
-import Example from './example.vue'
 import homebg from "@/assets/images/home-bg.png";
 import znrs from "@/assets/images/snap/znrs.jpg";
 import swpz from "@/assets/images/snap/swpz.jpg";
@@ -80,20 +79,19 @@ export default {
     InforCard,
     CountTo,
     ChartPie,
-    ChartBar,
-    Example
+    ChartBar
   },
   data () {
     return {
       homebg,znrs,swpz,scr,gwfs,kfz,kyq,
 
       zooms: [
-        { title: '智能燃烧', icon: znrs,url:'/znrs'},
-        { title: '三维膨胀', icon: swpz,url:'/zxswpz' },
-        { title: '智能SCR', icon: scr ,url:'/znscrjb'},
-        { title: '高温腐蚀监测', icon: gwfs,url:'/gwfs' },
-        { title: '智能吹灰', icon: ch,url:'/znch' },
-        { title: '智能空预器', icon: kyq ,url:'/znkyq'}
+        //{ title: '智能燃烧', icon: znrs,url:'/znrs'},
+        //{ title: '三维膨胀', icon: swpz,url:'/zxswpz' },
+        //{ title: '智能SCR', icon: scr ,url:'/znscrjb'},
+       // { title: '高温腐蚀监测', icon: gwfs,url:'/gwfs' },
+        { title: '智能吹灰', icon: ch,url:'/znch' }
+       // { title: '智能空预器', icon: kyq ,url:'/znkyq'}
       ]
     }
   },
