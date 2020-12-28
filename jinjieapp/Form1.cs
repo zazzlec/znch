@@ -328,7 +328,7 @@ namespace jinjieapp
                 var name = item["tag"].ToString();
                 if (item["item"]["DV"] != null)
                 {
-                    value = (int.Parse(item["item"]["DV"].ToString()))&8/8;//取出来的数值是2和10，需要取二进制第4位的值
+                    value = ((int.Parse(item["item"]["DV"].ToString()))&8)/8;//取出来的数值是2和10，需要取二进制第4位的值
                 }
                 else
                 {
@@ -641,7 +641,7 @@ namespace jinjieapp
         {
             DBHelper db = new DBHelper();
 
-            realtime = DateTime.Parse("2020-12-27 13:12:18");
+            realtime = DateTime.Parse("2020-12-27 18:15:17");
 
             #region 获取参数
 
@@ -1075,13 +1075,13 @@ namespace jinjieapp
                     {
 
 
-                        string sql_fh = "select Fh from dncfhdata ORDER BY RealTime DESC LIMIT 11";
+                        string sql_fh = "select Fh_Val from dncfhdata ORDER BY RealTime DESC LIMIT 11";
                         DataTable dt_fh = db.GetCommand(sql_fh);
                         //int[] fh = new int[10];
                         bool a = true;
                         if (dt_fh != null && dt_fh.Rows.Count > 0)
                         {
-                            for (int i = 1; i < 11; i++)
+                            for (int i = 0; i < 10; i++)
                             {
                                 if (Math.Abs(int.Parse(dt_fh.Rows[i + 1][0].ToString()) - int.Parse(dt_fh.Rows[i][0].ToString())) > 5)
                                 {
@@ -1246,7 +1246,7 @@ namespace jinjieapp
                 #endregion
 
                 #region  区域2为周期性(短吹)、长时间未吹灰的、低负荷长期运行添加入的吹灰器
-                string sp = "select loop  from dncch_parameter where DncBoilerId=" + bid;
+                string sp = "select `loop`  from dncch_parameter where DncBoilerId=" + bid;
                 DataTable dtsp = db.GetCommand(sp);
                 if (dtsp.Rows.Count>0 && dtsp.Rows[0][0].ToString().Equals("1"))
                 {
@@ -1683,12 +1683,6 @@ namespace jinjieapp
         #endregion
 
         
-
-
-
-
-
-
 
         #region 获取token （按钮事件）
         private void Button1_Click(object sender, EventArgs e)

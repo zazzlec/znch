@@ -92,10 +92,10 @@ namespace jinjieapp
                 para2 += "{\"items\":[\"" + ptype + "\"],\"namespace\": \"" + nspace + "\",\"tag\":\"" + item + "\"},";
             }
             para2 = para2.Substring(0, para2.Length - 1) + "]}";
-         //   MessageBox.Show(para2);
+          //  MessageBox.Show(para2);
             string url_realdata =  "/macs/v1/realtime/read/findPoints";//锦界
             String r2 = HttpHelpercs.HttpPost(url_realdata, para2);
-       //     MessageBox.Show(r2);
+          //  MessageBox.Show(r2);
             JObject rt2 = (JObject)JsonConvert.DeserializeObject(r2);
 
             JToken ja2 = rt2["data"];
@@ -317,7 +317,7 @@ namespace jinjieapp
         private string fhtag = "AMGENMW";
         private void GetFH(DBHelper db)
         {
-            realtime = DateTime.Now;
+            //realtime = DateTime.Now;
             JToken jt = JinJieHttp(fhtag, "AV");
             double value2 = 0d;
             var item = jt[0];
@@ -325,6 +325,9 @@ namespace jinjieapp
             if (item["item"]["AV"] != null)
             {
                 value2 = double.Parse(item["item"]["AV"].ToString());
+                var timestamp = long.Parse(item["item"]["timestamp"].ToString());//锦界环境
+                realtime = ConvertLongToDateTime(timestamp);//锦界环境
+
             }
             else
             {
@@ -341,18 +344,23 @@ namespace jinjieapp
         #region 吹灰器状态更新  15秒
         private void RefreshState(DBHelper db)
         {
-            string sql = "select kkscode from dncchqkks and DncBoilerId=" + bid;
+          //  realtime = DateTime.Now;
+            string sql = "select kkscode from dncchqkks where DncBoilerId=" + bid;
             DataTable dt_pk = db.GetCommand(sql);
             JToken ja = JinJieHttp(dt_pk, "DV");
             int value;
             List<string> arr = new List<string>();
+            long timestamp = 0;
             for (int i = 0; i < ja.Count(); i++)
             {
                 var item = ja[i];
                 var name = item["tag"].ToString();
                 if (item["item"]["DV"] != null)
                 {
-                    value = int.Parse(item["item"]["DV"].ToString());
+                   // value = int.Parse(item["item"]["DV"].ToString());
+                    value = ((int.Parse(item["item"]["DV"].ToString())) & 8) / 8;//取出来的数值是2和10，需要取二进制第4位的值
+                    timestamp = long.Parse(item["item"]["timestamp"].ToString());//锦界环境
+                    realtime = ConvertLongToDateTime(timestamp);//锦界环境
                 }
                 else
                 {
@@ -604,7 +612,7 @@ namespace jinjieapp
                 //  var timestamp = long.Parse(item["timestamp"].ToString());//和利时环境
                 // DateTime up_date = ConvertLongToDateTime(timestamp);//和利时环境
                 // DateTime up_date = DateTime.Parse(item["dateTime"].ToString());//锦界现场环境
-                  var timestamp = long.Parse(item["item"]["timestamp"].ToString());//锦界环境
+                 var timestamp = long.Parse(item["item"]["timestamp"].ToString());//锦界环境
                  DateTime up_date = ConvertLongToDateTime(timestamp);//锦界环境
                 d1 = up_date;
                 sql_up_pvalue = "update dncchpointkks_6 set Pvalue=" + value + ",RealTime='" + up_date + "' where Name_kw='" + name + "' and DncBoilerId=" + bid + ";";//6号炉
@@ -1890,7 +1898,8 @@ namespace jinjieapp
                     string sql_up_sta = "";
                     if (item["item"]["DV"] != null)
                     {
-                        value4 = int.Parse(item["item"]["DV"].ToString());
+                        // value4 = int.Parse(item["item"]["DV"].ToString());
+                        value4 = ((int.Parse(item["item"]["DV"].ToString())) & 8) / 8;//取出来的数值是2和10，需要取二进制第4位的值
                     }
                     else
                     {
@@ -1942,8 +1951,8 @@ namespace jinjieapp
             }
             //rsqy_tags_16
 
-            string rsqyqpwd = "insert into dncchhzpoint(DncTypeId, DncType_Name, RealTime, Pvalue, Status, IsDeleted, DncBoilerId, DncBoiler_Name) values(85, '燃烧区域鳍片温度',  '" + realtime + "','[" + string.Join(",", ret) + "]', 1, 0," + bid + ", '" + bid + "号机组')";
-            arr.Add(rsqyqpwd);
+            //string rsqyqpwd = "insert into dncchhzpoint(DncTypeId, DncType_Name, RealTime, Pvalue, Status, IsDeleted, DncBoilerId, DncBoiler_Name) values(85, '燃烧区域鳍片温度',  '" + realtime + "','[" + string.Join(",", ret) + "]', 1, 0," + bid + ", '" + bid + "号机组')";
+            //arr.Add(rsqyqpwd);
 
             db.ExecuteTransaction(arr);
 
