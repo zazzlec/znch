@@ -1464,6 +1464,19 @@ namespace znrsserver
                         }
                         else if (ss_st.Equals("1"))
                         {
+
+                            //                            {
+                            //                                "tags":
+                            //    [
+                            //        {"items":["AV"],"namespace": "unit06","tag":"HCB10CT602"},//疏水温度1
+                            //        {"items":["AV"],"namespace": "unit06","tag":"HCB10CT603"},//疏水温度2
+                            //        {"items":["AV"],"namespace": "unit06","tag":"HCB10CT604"},//疏水温度3
+                            //        {"items":["AV"],"namespace": "unit06","tag":"HCB10CT605"},//疏水温度4
+                            //        {"items":["AV"],"namespace": "unit06","tag":"HCB10CP101"}//吹灰压力
+                            //    ]
+                            //}
+
+
                             //温度  压力 达到之后，修改状态为2
                             // todo
                         }
