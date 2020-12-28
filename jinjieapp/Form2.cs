@@ -2153,6 +2153,9 @@ namespace jinjieapp
                     RefreshState(db);
                 }
 
+
+                
+
                 //1分钟一次 获取机组负荷
                 if (c % (1 * 12) == 0)
                 {
@@ -2163,25 +2166,34 @@ namespace jinjieapp
                 {
                     WRLPoint(db);//realtime 赋值
 
+                    AddLgoToTXT("2169: "+realtime.ToString("yyyy-MM-dd hh:mm:ss"));
                     //调接口读取并更新96个吹灰点的鳍片温度值和背火侧温度值 和 燃烧区域漆片温度
                     CHPoint(db);
+
+                    AddLgoToTXT("2173: " + realtime.ToString("yyyy-MM-dd hh:mm:ss"));
                 }
                 //3分钟一次 执行吹灰30分钟后更新上次鳍片温度和背火侧温差
                 if (c % (3 * 12) == 0)
                 {
                     //执行吹灰30分钟后更新上次鳍片温度和背火侧温差
                     AfterCH30(db);
+
+                    AddLgoToTXT("2181: " + realtime.ToString("yyyy-MM-dd hh:mm:ss"));
                 }
                 //5分钟一次  计算污染率，加入待吹灰列表，空预器吹灰器加入执行列表
                 if (c % (5 * 12) == 0)
                 {
+                    AddLgoToTXT("2186: " + realtime.ToString("yyyy-MM-dd hh:mm:ss"));
                     JSWRL(db);
+                    AddLgoToTXT("2187: " + realtime.ToString("yyyy-MM-dd hh:mm:ss"));
                 }
 
                 //1分钟一次   待吹灰加入执行列表
                 if (c % (1 * 12) == 0)
                 {
+
                     Znchrun(db);
+
                 }
 
 
