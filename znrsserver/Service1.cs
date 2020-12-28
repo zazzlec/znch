@@ -39,6 +39,17 @@ namespace znrsserver
             return ja;
         }
 
+        private JToken JinJieHttp(string para)
+        {
+            string url_realdata = "/macs/v1/realtime/read/findPoints";//锦界
+            //string url_write = url + "/macs/v1/realtime/write/writePoints";//锦界
+            String r = HttpHelpercs.HttpPost(url_realdata, para);
+            JObject rt = (JObject)JsonConvert.DeserializeObject(r);
+
+            JToken ja = rt["data"];
+            return ja;
+        }
+
         private List<JToken> JinJieHttpMore(DataTable dt_pk, string ptype)
         {
             //string sql_pointkkscode = "SELECT kkscode,Name_kw,bhcindex,badkks,backkks,frontkks,stopkks from dncchqpoint WHERE DncBoilerId=" + bid + " and position=1";
@@ -117,6 +128,16 @@ namespace znrsserver
             return ja2.ToString().Equals("0");
         }
 
+
+        private bool JinJieHttpDo(string dt_pk, string pmode,string value)
+        {
+            string para2 = "{\"tags\":[{\"items\": [{\"item\": \"" + pmode + "\",\"value\": "+ value + "}],\"namespace\": \"" + nspace + "\",\"tag\":\"" + dt_pk + "\"}]";
+            string url_realdata = "/macs/v1/realtime/write/writePoints";//锦界
+            String r2 = HttpHelpercs.HttpPost(url_realdata, para2);
+            JObject rt2 = (JObject)JsonConvert.DeserializeObject(r2);
+            JToken ja2 = rt2["status"];
+            return ja2.ToString().Equals("0");
+        }
 
         #endregion
 
@@ -688,7 +709,7 @@ namespace znrsserver
         }
         #endregion
 
-        #region 计算污染率  5
+        #region 计算污染率加入待吹灰列表，空预器吹灰器加入执行列表  5
         private void JSWRL(DBHelper db)
         {
 
@@ -1271,11 +1292,11 @@ namespace znrsserver
                                         string sql_add = "";
                                         if (chmode.Equals("1"))
                                         {
-                                            sql_add = "insert into dncchlist (K_Name_kw,AddTime,DncChqpointId,DncChqpoint_Name,AddReason,DncBoilerId,DncBoiler_Name,Status,IsDeleted) values('" + chq_name + "','" + now_time + "'," + id + ",'" + chq_name + "',1," + bid + ",'" + bname + "',1,0);";
+                                            sql_add = "insert into dncchlist (K_Name_kw,AddTime,DncChqpointId,DncChqpoint_Name,AddReason,DncBoilerId,DncBoiler_Name,Status,IsDeleted) values('" + chq_name + "','" + realtime + "'," + id + ",'" + chq_name + "',1," + bid + ",'" + bname + "',1,0);";
                                         }
                                         else
                                         {
-                                            sql_add = "insert into dncchlist (K_Name_kw,AddTime,DncChqpointId,DncChqpoint_Name,AddReason,DncBoilerId,DncBoiler_Name,Status,IsDeleted) values('" + chq_name + "','" + now_time + "'," + id + ",'" + chq_name + "',99," + bid + ",'" + bname + "',0,0);";
+                                            sql_add = "insert into dncchlist (K_Name_kw,AddTime,DncChqpointId,DncChqpoint_Name,AddReason,DncBoilerId,DncBoiler_Name,Status,IsDeleted) values('" + chq_name + "','" + realtime + "'," + id + ",'" + chq_name + "',99," + bid + ",'" + bname + "',0,0);";
                                         }
                                         sql_chlist_add.Append(sql_add);
 
@@ -1465,18 +1486,42 @@ namespace znrsserver
                         else if (ss_st.Equals("1"))
                         {
 
-                            //                            {
-                            //                                "tags":
-                            //    [
-                            //        {"items":["AV"],"namespace": "unit06","tag":"HCB10CT602"},//疏水温度1
-                            //        {"items":["AV"],"namespace": "unit06","tag":"HCB10CT603"},//疏水温度2
-                            //        {"items":["AV"],"namespace": "unit06","tag":"HCB10CT604"},//疏水温度3
-                            //        {"items":["AV"],"namespace": "unit06","tag":"HCB10CT605"},//疏水温度4
-                            //        {"items":["AV"],"namespace": "unit06","tag":"HCB10CP101"}//吹灰压力
-                            //    ]
-                            //}
+                            string s="{\"tags\":[{\"items\":[\"AV\"],\"namespace\": \"" + nspace + "\",\"tag\":\"HCB10CT602\"},{\"items\":[\"AV\"],\"namespace\": \"" + nspace + "\",\"tag\":\"HCB10CT603\"},{\"items\":[\"AV\"],\"namespace\": \"" + nspace + "\",\"tag\":\"HCB10CT604\"},{\"items\":[\"AV\"],\"namespace\": \"" + nspace + "\",\"tag\":\"HCB10CT605\"}]}";
 
+                            JToken ja = JinJieHttp(s);
+                            double value = 0;
+                            bool b = true;
+                            for (int i = 0; i < ja.Count(); i++)
+                            {
+                                var item = ja[i];
+                                var name = item["tag"].ToString();
+                                if (item["item"]["AV"] != null)
+                                {
+                                    value = double.Parse(item["item"]["AV"].ToString());
+                                }
+                                else
+                                {
+                                    value = 999;
+                                }
+                                if (value < 230)
+                                {
+                                    b = false;
+                                    break;
+                                }
+                            }
 
+                            ja = JinJieHttp("HCB10CP101","AV");
+                            double d= double.Parse(ja[0]["item"]["AV"].ToString());
+                            if (d<1)
+                            {
+                                b = false;
+                            }
+
+                            if (b)
+                            {
+                                c = "update dncboiler set Ss_sta='2' where id=" + bid;
+                                db.CommandExecuteNonQuery(c);
+                            }
                             //温度  压力 达到之后，修改状态为2
                             // todo
                         }
@@ -1620,6 +1665,32 @@ namespace znrsserver
                 sql = "select q.DncChqpointId,q.DncChqpoint_Name,p.DncChstatusId,q.Id from dncchrunlist_kyq q inner join dncchqpoint p on q.DncChqpointId=p.Id where q.DncBoilerId=" + bid + " and q.OffTime is null and q.RunTime is null order by q.Id";
                 if (db.GetCommand(sql).Rows.Count > 0)
                 {
+
+                    //DMAPHSBWFQPUTINPB2
+                    JToken ja = JinJieHttp("HCB10CP101", "AV");
+                    double d = double.Parse(ja[0]["item"]["AV"].ToString());
+                    bool b1 = false;
+                    int ii = 0;
+                    do
+                    {
+                        if (d < 1)
+                        {
+                            b1 = JinJieHttpDo("DMAPHSBWFQPUTINPB2", "DI", "1");
+
+                        }
+                        else
+                        {
+                            b1 = JinJieHttpDo("DMAPHSBWFQPUTINPB2", "DI", "0");
+                        }
+                        ii++;
+                        if (ii>=5)
+                        {
+                            throw new Exception("空预器吹灰选择汽源失败！");
+                        }
+                    } while (!b1);
+                    
+                    
+
                     //智能化空预器吹灰调用程控
                     bool b = JinJieHttpDo("ZHAPHSBWSQR", "DI");
                     int donum = 0;
@@ -1827,12 +1898,12 @@ namespace znrsserver
                     RefreshState(db);
                 }
 
-                //1分钟一次
+                //1分钟一次 获取机组负荷
                 if (c % (1 * 12) == 0)
                 {
                     GetFH(db);
                 }
-                //5分钟一次
+                //5分钟一次 获取测点数据
                 if (c % (5 * 12) == 0)
                 {
                     WRLPoint(db);//realtime 赋值
@@ -1840,28 +1911,32 @@ namespace znrsserver
                     //调接口读取并更新96个吹灰点的鳍片温度值和背火侧温度值 和 燃烧区域漆片温度
                     CHPoint(db);
                 }
-                //3分钟一次
+                //3分钟一次 执行吹灰30分钟后更新上次鳍片温度和背火侧温差
                 if (c % (3 * 12) == 0)
                 {
                     //执行吹灰30分钟后更新上次鳍片温度和背火侧温差
                     AfterCH30(db);
                 }
-                //5分钟一次
+                //5分钟一次  计算污染率，加入待吹灰列表，空预器吹灰器加入执行列表
                 if (c % (5 * 12) == 0)
                 {
                     JSWRL(db);
                 }
-                //30秒一次
+
+                //1分钟一次   待吹灰加入执行列表
+                if (c % (1 * 12) == 0)
+                {
+                    Znchrun(db);
+                }
+
+
+                //30秒一次   吹灰列表执行
                 if (c % (1 * 6) == 0)
                 {
                     ChRun(db);
                     KyqChRun(db);
                 }
-                //1分钟一次
-                if (c % (1 * 12) == 0)
-                {
-                    Znchrun(db);
-                }
+                
                 
                 c++;
 
