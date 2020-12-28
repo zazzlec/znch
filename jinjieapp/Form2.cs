@@ -676,7 +676,7 @@ namespace jinjieapp
                 };
                 string jarstr = System.Text.RegularExpressions.Regex.Replace(jar.ToString(), @"\r\n", matchEvalu);
                 jarstr = System.Text.RegularExpressions.Regex.Replace(jarstr.ToString(), @" ", matchEvalu);
-                arr.Add("insert into dncchhzpoint(DncTypeId,DncType_Name,RealTime,Pvalue,Status,IsDeleted,DncBoilerId,DncBoiler_Name) values(" + typeid + ",'" + typename + "','" + dtnow + "','" + jarstr + "',1,0," + bid + ",'" + bid.ToString() + "号机组');");
+                arr.Add("insert into dncchhzpoint(DncTypeId,DncType_Name,RealTime,Pvalue,Status,IsDeleted,DncBoilerId,DncBoiler_Name) values(" + typeid + ",'" + typename + "','" + realtime + "','" + jarstr + "',1,0," + bid + ",'" + bid.ToString() + "号机组');");
 
             }
 
@@ -2186,11 +2186,11 @@ namespace jinjieapp
 
 
                 //30秒一次   吹灰列表执行
-                if (c % (1 * 6) == 0)
-                {
-                    ChRun(db);
-                    KyqChRun(db);
-                }
+                //if (c % (1 * 6) == 0)
+                //{
+                //    ChRun(db);
+                //    KyqChRun(db);
+                //}
 
 
                 c++;
