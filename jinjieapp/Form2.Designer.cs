@@ -41,6 +41,9 @@
             this.bchon = new System.Windows.Forms.Button();
             this.bchoff = new System.Windows.Forms.Button();
             this.timer2 = new System.Windows.Forms.Timer(this.components);
+            this.button9 = new System.Windows.Forms.Button();
+            this.button10 = new System.Windows.Forms.Button();
+            this.timer3 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // button1
@@ -158,11 +161,39 @@
             this.timer2.Interval = 10000;
             this.timer2.Tick += new System.EventHandler(this.Timer2_Tick);
             // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(214, 282);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(134, 46);
+            this.button9.TabIndex = 14;
+            this.button9.Text = "调接口(||)";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
+            // button10
+            // 
+            this.button10.Location = new System.Drawing.Point(44, 282);
+            this.button10.Name = "button10";
+            this.button10.Size = new System.Drawing.Size(134, 46);
+            this.button10.TabIndex = 13;
+            this.button10.Text = "调接口(>>)";
+            this.button10.UseVisualStyleBackColor = true;
+            this.button10.Click += new System.EventHandler(this.button10_Click);
+            // 
+            // timer3
+            // 
+            this.timer3.Enabled = true;
+            this.timer3.Interval = 5000;
+            this.timer3.Tick += new System.EventHandler(this.timer3_Tick);
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(758, 325);
+            this.ClientSize = new System.Drawing.Size(758, 380);
+            this.Controls.Add(this.button9);
+            this.Controls.Add(this.button10);
             this.Controls.Add(this.bchoff);
             this.Controls.Add(this.bchon);
             this.Controls.Add(this.button8);
@@ -194,6 +225,9 @@
         private System.Windows.Forms.Button bchon;
         private System.Windows.Forms.Button bchoff;
         private System.Windows.Forms.Timer timer2;
+        private System.Windows.Forms.Button button9;
+        private System.Windows.Forms.Button button10;
+        private System.Windows.Forms.Timer timer3;
     }
 }
 
