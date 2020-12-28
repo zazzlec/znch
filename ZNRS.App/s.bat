@@ -1,5 +1,5 @@
 ﻿@echo off 
-E: 
-cd E:\上锅人员\智能燃烧\独立版本\znch\ZNRS.App
+F: 
+cd F:\我的程序\智能电厂\锦界项目\程序\ZNCH\ZNRS.App
 npm run dev
 pause
