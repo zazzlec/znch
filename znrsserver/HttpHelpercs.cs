@@ -31,7 +31,7 @@ namespace znrsserver
 
 
 
-
+                
             }
             catch (Exception ex)
             {
@@ -65,11 +65,28 @@ namespace znrsserver
             return result;
         }
 
-        public static string token = "";
-        public static string account = "guolu";//登录账号，需要赋值
-        public static string password = "e10adc3949ba59abbe56e057f20f883e";//登录密码，需要赋值
-        public static string url = "http://172.21.32.160:8040";//实时数据和回写接口地址，需要赋值
+        public static string token="";
+        public static string account = "znch003";//登录账号，需要赋值
+        public static string password = "shglznch";//登录密码，需要赋值
+        public static string url = "http://132.0.6.80:8721";//接口地址，需要赋值
+        // public static string url = "http://132.0.5.80:8721";//接口地址，需要赋值
+        public static int ipindex = 0;
+        //public static int bid = 5;
+        public static int bid = 6;
+        public static string qz = "132.0";
+        public static string dk = "8721";
+        public static string[] host = { "80","81","82" };
 
+        public static string gethost()
+        {
+
+            return "http://" + qz + "." + bid + "." + host[ipindex] + ":" + dk + "";
+        }
+
+        public static string geturl()
+        {
+            return "http://" + qz + "." + bid + "." + host[ipindex] + ":" + dk + "/account/login";
+        }
         /// <summary>
         /// 获取token
         /// </summary>
@@ -78,12 +95,11 @@ namespace znrsserver
         {
             if (string.IsNullOrEmpty(token))
             {
-                string url_token = "http://172.21.32.160:8551/account/login";
-
+                string url_token = geturl();
 
                 //JObject param1 = (JObject)JsonConvert.DeserializeObject("{\"account\": \""+account+"\",\"password\": \""+password+"\"}");
-                string param1 = "{\"account\":\"" + account + "\",\"password\":\"" + password + "\"}";
-                string data = HttpPost(url_token, param1, 0);
+                string param1 = "{\"username\":\"" + account + "\",\"password\":\"" + password + "\"}";
+                string data = HttpPostTk(url_token, param1);
                 return data;
                 //   JObject ret = JObject.Parse(data);
                 //  token = ret["authorization"].ToString();
@@ -91,7 +107,8 @@ namespace znrsserver
             return token;
         }
 
-        public static string HttpPost(string postUrl, string param, int k)
+
+        public static string HttpPostTk(string postUrl, string param)
         {
             string ret = "";
             try
@@ -100,14 +117,7 @@ namespace znrsserver
                 //byte[] byteArray = Encoding.UTF8.GetBytes(paramData); //转化
                 HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(new Uri(postUrl));
                 webReq.Method = "POST";
-                if (k == 1)
-                {
-                    if (string.IsNullOrEmpty(token))
-                    {
-                        token = gettoken();
-                    }
-                    webReq.Headers.Add("Authorization", token);
-                }
+                webReq.Headers.Add("ContentType", "application/json");
 
 
                 webReq.ContentType = "application/json";
@@ -129,9 +139,60 @@ namespace znrsserver
                             ret = sReader.ReadToEnd();
                         }
                     }
-                    if (k == 0)
+                    
+                    JObject rt = (JObject)JsonConvert.DeserializeObject(ret);
+                    ret = rt["data"]["token"].ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ret = ex.Message;
+                if (ret.Equals("无法连接到远程服务器"))
+                {
+                    ipindex++;
+                    if (ipindex > 2)
                     {
-                        ret = response.Headers["authorization"];
+                        ipindex = 0;
+                    }
+                    return HttpPostTk(geturl(), param);
+                }
+            }
+
+            return ret;
+        }
+
+        public static string HttpPost(string postUrl, string param)
+        {
+            string ret = "";
+            try
+            {
+                string tk = gettoken();
+                //byte[] byteArray = Encoding.UTF8.GetBytes(paramData); //转化
+                HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(new Uri(gethost() + postUrl));
+                webReq.Method = "POST";
+                webReq.Headers.Add("ContentType", "application/json");
+
+                webReq.Headers.Add("Authorization",tk );
+                
+                webReq.ContentType = "application/json";
+                // byte[] btBodys = Encoding.UTF8.GetBytes(param.ToString());
+                //string a = "{\"account\": \"ics_data\",\"password\": \"e10adc3949ba59abbe56e057f20f883e\"}";
+                //  string a = param;
+                byte[] btBodys = Encoding.UTF8.GetBytes(param);
+                webReq.ContentLength = btBodys.Length;
+                //webReq.ContentLength = byteArray.Length;
+                Stream newStream = webReq.GetRequestStream();
+                newStream.Write(btBodys, 0, btBodys.Length);//写入参数
+                newStream.Close();
+                using (HttpWebResponse response = (HttpWebResponse)webReq.GetResponse())
+                {
+                    using (Stream responseStream = response.GetResponseStream())
+                    {
+                        using (StreamReader sReader = new StreamReader(responseStream, System.Text.Encoding.UTF8))
+                        {
+                            ret = sReader.ReadToEnd();
+                        }
                     }
                 }
 
@@ -139,10 +200,84 @@ namespace znrsserver
             catch (Exception ex)
             {
                 ret = ex.Message;
+                if (ret.Equals("无法连接到远程服务器"))
+                {
+                    ipindex++;
+                    if (ipindex > 2)
+                    {
+                        ipindex = 0;
+                    }
+                    return HttpPost(geturl(), param);
+                }
             }
 
             return ret;
         }
+        //public static string HttpPost(string postUrl, string param,int k)
+        //{
+        //    string ret = "";
+        //    try
+        //    {
+
+        //        //byte[] byteArray = Encoding.UTF8.GetBytes(paramData); //转化
+        //        HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(new Uri(postUrl));
+        //        webReq.Method = "POST";
+        //        webReq.Headers.Add("ContentType", "application/json");
+        //        if (k==1)
+        //        {
+        //            if (string.IsNullOrEmpty(token))
+        //            {
+        //               token = gettoken();
+        //            }
+        //            webReq.Headers.Add("Authorization", token); 
+        //        }              
+
+
+        //         webReq.ContentType = "application/json";
+        //         // byte[] btBodys = Encoding.UTF8.GetBytes(param.ToString());
+        //         //string a = "{\"account\": \"ics_data\",\"password\": \"e10adc3949ba59abbe56e057f20f883e\"}";
+        //        //  string a = param;
+        //         byte[] btBodys = Encoding.UTF8.GetBytes(param);
+        //        webReq.ContentLength = btBodys.Length;
+        //        //webReq.ContentLength = byteArray.Length;
+        //        Stream newStream = webReq.GetRequestStream();
+        //        newStream.Write(btBodys, 0, btBodys.Length);//写入参数
+        //        newStream.Close();
+        //        using (HttpWebResponse response = (HttpWebResponse)webReq.GetResponse())
+        //        {
+        //            using (Stream responseStream = response.GetResponseStream())
+        //            {
+        //                using (StreamReader sReader = new StreamReader(responseStream, System.Text.Encoding.UTF8))
+        //                {
+        //                    ret = sReader.ReadToEnd();
+        //                }
+        //            }
+        //            if (k == 0)
+        //            {
+        //                JObject rt = (JObject)JsonConvert.DeserializeObject(ret);
+
+        //                ret = rt["data"]["token"].ToString();
+
+        //            }
+        //        }
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        ret = ex.Message;
+        //        if (ret.Equals("无法连接到远程服务器"))
+        //        {
+        //            ipindex++;
+        //            if (ipindex>2)
+        //            {
+        //                ipindex = 0;
+        //            }
+        //            return HttpPost(geturl(), param, k);
+        //        }
+        //    }
+
+        //    return ret;
+        //}
 
 
     }

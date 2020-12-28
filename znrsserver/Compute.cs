@@ -7,9 +7,9 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using ZNRS.Api.dataoperate;
 
-
-namespace znrsserver
+namespace SynZnrs
 {
     public class Compute
     {
@@ -129,6 +129,71 @@ namespace znrsserver
         }
 
         /// <summary>
+        /// O2、NOx巡测测点平均值计算
+        /// </summary>
+        /// <returns></returns>
+        public static double[] O_avg(string deep1, string deep2, string deep3)
+        {
+            double[] avg = new double[2];
+            JsonData jsonData1 = JsonMapper.ToObject(deep1);
+            JsonData jsonData2 = JsonMapper.ToObject(deep2);
+            JsonData jsonData3 = JsonMapper.ToObject(deep3);
+            int count1 = jsonData1.Count;
+            int count2 = jsonData2.Count;
+            int count3 = jsonData3.Count;
+
+            double a = 0d;
+            double b = 0d;
+            for (int i = 0; i < count1; i++)
+            {
+                if (i < count1 / 2)
+                {
+                    a = a + double.Parse(jsonData1[i].ToString());
+                }
+                else
+                {
+                    b = b + double.Parse(jsonData1[i].ToString());
+                }
+
+
+            }
+
+            for (int i = 0; i < count2; i++)
+            {
+                if (i < count2 / 2)
+                {
+                    a = a + double.Parse(jsonData2[i].ToString());
+                }
+                else
+                {
+                    b = b + double.Parse(jsonData2[i].ToString());
+                }
+
+
+            }
+
+            for (int i = 0; i < count3; i++)
+            {
+                if (i < count3 / 2)
+                {
+                    a = a + double.Parse(jsonData3[i].ToString());
+                }
+                else
+                {
+                    b = b + double.Parse(jsonData3[i].ToString());
+                }
+
+
+            }
+
+            avg[0] = a / (count1 / 2 + count2 / 2 + count3 / 2);
+            avg[1] = b / (count1 / 2 + count2 / 2 + count3 / 2);
+            return avg;
+
+
+        }
+
+        /// <summary>
         /// 传入数组和定义取最高的n个值，返回最高n个的平均值
         /// </summary>
         /// <param name="data"></param>
@@ -146,6 +211,22 @@ namespace znrsserver
             var q = from u in list.ToArray() select u;
             return q.OrderByDescending(x => x).Take(n).Average();
            
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hq">减温器前焓值</param>
+        /// <param name="hh">减温器后焓值</param>
+        /// <param name="hj">低再减温水焓值</param>
+        /// <param name="fh">实时负荷</param>
+        /// <param name="edfh">额定负荷（MW）</param>
+        /// <param name="edll">再热蒸汽设计流量</param>
+        /// <returns></returns>
+        public static double Jwsl_zrq(double hq,double hh,double hj,double fh,double edfh,double edll)
+        {
+            double jwsl = (hq - hh) / (hh - hj) * (fh * edll / edfh);
+            return jwsl;
         }
 
         /// <summary>
@@ -183,6 +264,9 @@ namespace znrsserver
             
             return index;
         }
+
+       
+
 
 
     }

@@ -109,7 +109,7 @@
                       placeholder="输入/搜索..."
                       @on-search="handleSearchBoiler()"
                     >
-                      <Select
+                      <!-- <Select
                         slot="prepend"
                         v-model="stores.Boiler.query.isDeleted"
                         @on-change="handleSearchBoiler"
@@ -134,14 +134,14 @@
                           :value="item.value"
                           :key="item.value"
                         >{{item.text}}</Option>
-                      </Select>
+                      </Select> -->
                     </Input>
                   </FormItem>
                 </Form>
               </Col>
               <Col span="8" class="dnc-toolbar-btns">
                 <ButtonGroup class="mr3">
-                  <Button
+                  <!-- <Button
                     class="txt-danger"
                     icon="md-trash"
                     title="删除"
@@ -164,9 +164,9 @@
                     icon="md-checkmark"
                     title="启用"
                     @click="handleBatchCommand('normal')"
-                  ></Button>
+                  ></Button> -->
                   <Button icon="md-refresh" title="刷新" @click="handleRefresh"></Button>
-                  <Button icon="md-list-box" title="批量录入" @click="handleInputData" ></Button>
+                  <!-- <Button icon="md-list-box" title="批量录入" @click="handleInputData" ></Button> -->
                 </ButtonGroup>
                 <Button
                   icon="md-create"
@@ -653,7 +653,7 @@
     >
       <Form :model="formModel99.fields" ref="formch_parameter" :rules="formModel100.rules" label-position="top">
 
-        <Row :gutter="16">
+        <!-- <Row :gutter="16">
                     <Col span="8">
                     <FormItem label="低过设计沾污系数" prop="dg_zwxs_design_Val">
                     <Input-number  v-model="formModel100.fields.dg_zwxs_design_Val"  style="width:100%"></Input-number>
@@ -688,11 +688,16 @@
                     <Input-number  v-model="formModel100.fields.fs_zwxs_design_Val"  style="width:100%"></Input-number>
                     </FormItem>
                     </Col>
-                </Row>
+                </Row> -->
                 <Row :gutter="16">
                     <Col span="8">
-                    <FormItem label="主省煤器设计沾污系数" prop="zs_zwxs_design_Val">
+                    <!-- <FormItem label="主省煤器设计沾污系数" prop="zs_zwxs_design_Val">
                     <Input-number  v-model="formModel100.fields.zs_zwxs_design_Val"  style="width:100%"></Input-number>
+                    </FormItem> -->
+
+
+                    <FormItem label="主省煤器污染率上限" prop="zs_wrl_high_Val">
+                    <Input-number  v-model="formModel100.fields.zs_wrl_high_Val"  style="width:100%"></Input-number>
                     </FormItem>
                     </Col>
                 
@@ -1464,7 +1469,7 @@ export default {
             ]
           },
           columns: [
-            { type: "selection", width: 50, key: "handle" },
+            // { type: "selection", width: 50, key: "handle" },
             { title: "机组名", key: "k_Name_kw",  sortable: "custom" },    
             { title: "最新同步时间", key: "syntime",  sortable: "custom" ,
               render: (h, params) => {
@@ -1490,162 +1495,162 @@ export default {
               className: "table-command-column",
               options: ["edit"],
               button: [
-                (h, params, vm) => {
-                  return h(
-                    "Poptip",
-                    {
-                      props: {
-                        confirm: true,
-                        title: "你确定要删除吗?"
-                      },
-                      on: {
-                        "on-ok": () => {
-                          vm.$emit("on-delete", params);
-                        }
-                      }
-                    },
-                    [
-                      h(
-                        "Tooltip",
-                        {
-                          props: {
-                            placement: "left",
-                            transfer: true,
-                            delay: 15000
-                          }
-                        },
-                        [
-                          h("Button", {
-                            props: {
-                              shape: "circle",
-                              type: "error"
-                            }
-                          }
-                          ,"删除"
-                          )
-                        ]
-                      )
-                    ]
-                  );
-                },
-                (h, params, vm) => {
-                  return h(
-                    "Tooltip",
-                    {
-                      props: {
-                        placement: "left",
-                        transfer: true,
-                        delay: 16000
-                      }
-                    },
-                    [
-                      h("Button", {
-                        props: {
-                          shape: "circle",
-                          type: "primary"
-                        },
-                        on: {
-                          click: () => {
-                            vm.$emit("on-edit", params);
-                            vm.$emit("input", params.tableData);
-                          }
-                        }
-                      }
-                      ,"编辑"
+                // (h, params, vm) => {
+                //   return h(
+                //     "Poptip",
+                //     {
+                //       props: {
+                //         confirm: true,
+                //         title: "你确定要删除吗?"
+                //       },
+                //       on: {
+                //         "on-ok": () => {
+                //           vm.$emit("on-delete", params);
+                //         }
+                //       }
+                //     },
+                //     [
+                //       h(
+                //         "Tooltip",
+                //         {
+                //           props: {
+                //             placement: "left",
+                //             transfer: true,
+                //             delay: 15000
+                //           }
+                //         },
+                //         [
+                //           h("Button", {
+                //             props: {
+                //               shape: "circle",
+                //               type: "error"
+                //             }
+                //           }
+                //           ,"删除"
+                //           )
+                //         ]
+                //       )
+                //     ]
+                //   );
+                // },
+                // (h, params, vm) => {
+                //   return h(
+                //     "Tooltip",
+                //     {
+                //       props: {
+                //         placement: "left",
+                //         transfer: true,
+                //         delay: 16000
+                //       }
+                //     },
+                //     [
+                //       h("Button", {
+                //         props: {
+                //           shape: "circle",
+                //           type: "primary"
+                //         },
+                //         on: {
+                //           click: () => {
+                //             vm.$emit("on-edit", params);
+                //             vm.$emit("input", params.tableData);
+                //           }
+                //         }
+                //       }
+                //       ,"编辑"
                         
-                      )
-                    ]
-                  );
-                },
+                //       )
+                //     ]
+                //   );
+                // },
 
 
 
 
-                (h, params, vm) => {
-                  return h(
-                    "Tooltip",
-                    {
-                      props: {
-                        placement: "left",
-                        transfer: true,
-                        delay: 16000
-                      }
-                    },
-                    [
-                      h("Button", {
-                          props: {
-                            shape: "circle",
-                            type: "primary"
-                          },
-                          on: {
-                            click: () => {
-                              vm.$emit("on-edit8", params);
-                            }
-                          }
-                        }
-                        ,"受热面参数"
-                        )
-                    ]
-                  );
-                },
+                // (h, params, vm) => {
+                //   return h(
+                //     "Tooltip",
+                //     {
+                //       props: {
+                //         placement: "left",
+                //         transfer: true,
+                //         delay: 16000
+                //       }
+                //     },
+                //     [
+                //       h("Button", {
+                //           props: {
+                //             shape: "circle",
+                //             type: "primary"
+                //           },
+                //           on: {
+                //             click: () => {
+                //               vm.$emit("on-edit8", params);
+                //             }
+                //           }
+                //         }
+                //         ,"受热面参数"
+                //         )
+                //     ]
+                //   );
+                // },
 
 
 
-                (h, params, vm) => {
-                  return h(
-                    "Tooltip",
-                    {
-                      props: {
-                        placement: "left",
-                        transfer: true,
-                        delay: 16000
-                      }
-                    },
-                    [
-                      h("Button", {
-                          props: {
-                            shape: "circle",
-                            type: "primary"
-                          },
-                          on: {
-                            click: () => {
-                              vm.$emit("on-edit9", params);
-                            }
-                          }
-                        }
-                        ,"异常参数"
-                        )
-                    ]
-                  );
-                },
+                // (h, params, vm) => {
+                //   return h(
+                //     "Tooltip",
+                //     {
+                //       props: {
+                //         placement: "left",
+                //         transfer: true,
+                //         delay: 16000
+                //       }
+                //     },
+                //     [
+                //       h("Button", {
+                //           props: {
+                //             shape: "circle",
+                //             type: "primary"
+                //           },
+                //           on: {
+                //             click: () => {
+                //               vm.$emit("on-edit9", params);
+                //             }
+                //           }
+                //         }
+                //         ,"异常参数"
+                //         )
+                //     ]
+                //   );
+                // },
 
-                (h, params, vm) => {
-                  return h(
-                    "Tooltip",
-                    {
-                      props: {
-                        placement: "left",
-                        transfer: true,
-                        delay: 16000
-                      }
-                    },
-                    [
-                      h("Button", {
-                          props: {
-                            shape: "circle",
-                            type: "primary"
-                          },
-                          on: {
-                            click: () => {
-                              vm.$emit("on-edit99", params);
-                            }
-                          }
-                        }
-                        ,"腐蚀参数"
-                        )
-                    ]
-                  );
-                },
+                // (h, params, vm) => {
+                //   return h(
+                //     "Tooltip",
+                //     {
+                //       props: {
+                //         placement: "left",
+                //         transfer: true,
+                //         delay: 16000
+                //       }
+                //     },
+                //     [
+                //       h("Button", {
+                //           props: {
+                //             shape: "circle",
+                //             type: "primary"
+                //           },
+                //           on: {
+                //             click: () => {
+                //               vm.$emit("on-edit99", params);
+                //             }
+                //           }
+                //         }
+                //         ,"腐蚀参数"
+                //         )
+                //     ]
+                //   );
+                // },
 
 
                 (h, params, vm) => {
@@ -1677,33 +1682,33 @@ export default {
                 },
 
 
-                (h, params, vm) => {
-                  return h(
-                    "Tooltip",
-                    {
-                      props: {
-                        placement: "left",
-                        transfer: true,
-                        delay: 16000
-                      }
-                    },
-                    [
-                      h("Button", {
-                          props: {
-                            shape: "circle",
-                            type: "primary"
-                          },
-                          on: {
-                            click: () => {
-                              vm.$emit("on-edit110", params);
-                            }
-                          }
-                        }
-                        ,"空预器参数"
-                        )
-                    ]
-                  );
-                },
+                // (h, params, vm) => {
+                //   return h(
+                //     "Tooltip",
+                //     {
+                //       props: {
+                //         placement: "left",
+                //         transfer: true,
+                //         delay: 16000
+                //       }
+                //     },
+                //     [
+                //       h("Button", {
+                //           props: {
+                //             shape: "circle",
+                //             type: "primary"
+                //           },
+                //           on: {
+                //             click: () => {
+                //               vm.$emit("on-edit110", params);
+                //             }
+                //           }
+                //         }
+                //         ,"空预器参数"
+                //         )
+                //     ]
+                //   );
+                // },
 
               ]
             }

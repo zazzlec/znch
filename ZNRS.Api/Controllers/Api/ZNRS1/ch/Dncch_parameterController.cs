@@ -67,35 +67,46 @@ namespace ZNRS.Api.Controllers.Api.ZNRS1
         public IActionResult List(Dncch_parameterRequestPayload payload)
         {
             var response = ResponseModelFactory.CreateResultInstance;
-            using (_dbContext)
-            {
-                var query = _dbContext.Dncch_parameter.AsQueryable();
-                //模糊查询
-                
-                //是否删除，是否启用
-                if (payload.IsDeleted > CommonEnum.IsDeleted.All)
-                {
-                    query = query.Where(x => x.IsDeleted == payload.IsDeleted);
-                }
-                if (payload.Status > CommonEnum.Status.All)
-                {
-                    query = query.Where(x => x.Status == payload.Status);
-                }
-                if (payload.boilerid != -1)
-                {
-                    query = query.Where(x => x.DncBoilerId == payload.boilerid);
-                }
-                if (payload.FirstSort != null)
-                {
-                    query = query.OrderBy(payload.FirstSort.Field, payload.FirstSort.Direct == "DESC");
-                }
-                var list = query.Paged(payload.CurrentPage, payload.PageSize).ToList();
-                var totalCount = query.Count();
-                var data = list.Select(_mapper.Map< Dncch_parameter, Dncch_parameterJsonModel>);
 
-                response.SetData(data, totalCount);
-                return Ok(response);
+            try
+            {
+                using (_dbContext)
+                {
+                    var query = _dbContext.Dncch_parameter.AsQueryable();
+                    //模糊查询
+
+                    //是否删除，是否启用
+                    if (payload.IsDeleted > CommonEnum.IsDeleted.All)
+                    {
+                        query = query.Where(x => x.IsDeleted == payload.IsDeleted);
+                    }
+                    if (payload.Status > CommonEnum.Status.All)
+                    {
+                        query = query.Where(x => x.Status == payload.Status);
+                    }
+                    if (payload.boilerid != -1)
+                    {
+                        query = query.Where(x => x.DncBoilerId == payload.boilerid);
+                    }
+                    if (payload.FirstSort != null)
+                    {
+                        query = query.OrderBy(payload.FirstSort.Field, payload.FirstSort.Direct == "DESC");
+                    }
+                    var list = query.Paged(payload.CurrentPage, payload.PageSize).ToList();
+                    var totalCount = query.Count();
+                    var data = list.Select(_mapper.Map<Dncch_parameter, Dncch_parameterJsonModel>);
+
+                    response.SetData(data, totalCount);
+                    return Ok(response);
+                }
             }
+            catch (Exception  uu)
+            {
+                response.SetError(uu.Message);
+                return Ok(response);
+
+            }
+            
         }
 
         /// <summary>

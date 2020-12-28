@@ -149,11 +149,6 @@ namespace jinjieapp
             public string typename { get; set; }
         }
 
-        //  public static string url = "http://172.21.32.160:8040";//接口地址，需要赋值(和利时)
-        //public  string url()
-        //{
-        //    return HttpHelpercs.gethost();
-        //}//  "http://132.0.6.80:8721";//接口地址，需要赋值(锦界)
 
         /// <summary>
         /// 获取时间戳
@@ -310,8 +305,6 @@ namespace jinjieapp
 
         }
         #endregion
-
-        
 
         #region 取负荷数据 1分钟1次
         private string fhtag = "AMGENMW";
@@ -1095,7 +1088,16 @@ namespace jinjieapp
                         kyqid = int.Parse(item[0].ToString());
                         kyqname = item[1].ToString();
                         bname = item[2].ToString();
-                        sql_ky_runlist_add.Append("insert into dncchrunlist_kyq(Name_kw, AddTime, Remarks, Status, IsDeleted, DncChqpointId, DncChqpoint_Name, DncBoilerId, DncBoiler_Name) values('" + kyqname + "', '" + realtime + "', '" + kyqname + "', 1, 0, " + kyqid + ", '" + kyqname + "', " + bid + ", '" + bname + "'); ");
+
+                        if (chmode.Equals("1"))
+                        {
+                            sql_ky_runlist_add.Append("insert into dncchrunlist_kyq(Name_kw, AddTime, Remarks, Status, IsDeleted, DncChqpointId, DncChqpoint_Name, DncBoilerId, DncBoiler_Name) values('" + kyqname + "', '" + realtime + "', '" + kyqname + "', 1, 0, " + kyqid + ", '" + kyqname + "', " + bid + ", '" + bname + "'); ");
+                        }
+                        else
+                        {
+                            sql_ky_runlist_add.Append("insert into dncchrunlist_kyq(Name_kw, AddTime, RunTime,OffTime,Remarks, Status, IsDeleted, DncChqpointId, DncChqpoint_Name, DncBoilerId, DncBoiler_Name) values('" + kyqname + "', '" + realtime + "', '" + realtime + "', '" + realtime + "', '常规吹灰', 0, 1, " + kyqid + ", '" + kyqname + "', " + bid + ", '" + bname + "'); ");
+                        }
+
                         lastruntime = DateTime.Parse(item[3].ToString());
                     }
                     if (runnum_ky == 0 && int.Parse(realtime.Subtract(lastruntime).Minutes.ToString()) > 30)
@@ -1262,7 +1264,15 @@ namespace jinjieapp
                                         string chq_name = chlist[j].Name_kw;
                                         int bid = chlist[j].DncBoilerId;
                                         string bname = chlist[j].DncBoiler_Name;
-                                        string sql_add = "insert into dncchlist (K_Name_kw,AddTime,DncChqpointId,DncChqpoint_Name,AddReason,DncBoilerId,DncBoiler_Name,Status,IsDeleted) values('" + chq_name + "','" + now_time + "'," + id + ",'" + chq_name + "',1," + bid + ",'" + bname + "',1,0);";
+                                        string sql_add = "";
+                                        if (chmode.Equals("1"))
+                                        {
+                                            sql_add = "insert into dncchlist (K_Name_kw,AddTime,DncChqpointId,DncChqpoint_Name,AddReason,DncBoilerId,DncBoiler_Name,Status,IsDeleted) values('" + chq_name + "','" + now_time + "'," + id + ",'" + chq_name + "',1," + bid + ",'" + bname + "',1,0);";
+                                        }
+                                        else
+                                        {
+                                            sql_add = "insert into dncchlist (K_Name_kw,AddTime,DncChqpointId,DncChqpoint_Name,AddReason,DncBoilerId,DncBoiler_Name,Status,IsDeleted) values('" + chq_name + "','" + now_time + "'," + id + ",'" + chq_name + "',99," + bid + ",'" + bname + "',0,0);";
+                                        }
                                         sql_chlist_add.Append(sql_add);
 
                                     }
@@ -1277,7 +1287,19 @@ namespace jinjieapp
 
                                     foreach (DataRow item in dt_chlist_else.Rows)
                                     {
-                                        sql_add_else = "insert into dncchlist (K_Name_kw,AddTime,DncChqpointId,DncChqpoint_Name,AddReason,DncBoilerId,DncBoiler_Name,Status,IsDeleted) values('" + item[1].ToString() + "','" + now_time + "'," + int.Parse(item[0].ToString()) + ",'" + item[1].ToString() + "',1," + int.Parse(item[2].ToString()) + ",'" + item[3].ToString() + "',1,0);";
+
+                                        if (chmode.Equals("1"))
+                                        {
+                                            sql_add_else = "insert into dncchlist (K_Name_kw,AddTime,DncChqpointId,DncChqpoint_Name,AddReason,DncBoilerId,DncBoiler_Name,Status,IsDeleted) values('" + item[1].ToString() + "','" + now_time + "'," + int.Parse(item[0].ToString()) + ",'" + item[1].ToString() + "',1," + int.Parse(item[2].ToString()) + ",'" + item[3].ToString() + "',1,0);";
+
+                                        }
+                                        else
+                                        {
+                                            sql_add_else = "insert into dncchlist (K_Name_kw,AddTime,DncChqpointId,DncChqpoint_Name,AddReason,DncBoilerId,DncBoiler_Name,Status,IsDeleted) values('" + item[1].ToString() + "','" + now_time + "'," + int.Parse(item[0].ToString()) + ",'" + item[1].ToString() + "',99," + int.Parse(item[2].ToString()) + ",'" + item[3].ToString() + "',0,0);";
+
+                                        }
+
+
                                         sql_chlist_add.Append(sql_add_else);
 
                                     }
@@ -1293,7 +1315,7 @@ namespace jinjieapp
                 #endregion
 
                 #region  区域2为周期性(短吹)、长时间未吹灰的、低负荷长期运行添加入的吹灰器
-                string sp = "select loop  from dncch_parameter where DncBoilerId=" + bid;
+                string sp = "select `loop`  from dncch_parameter where DncBoilerId=" + bid;
                 DataTable dtsp = db.GetCommand(sp);
                 if (dtsp.Rows.Count>0 && dtsp.Rows[0][0].ToString().Equals("1"))
                 {
@@ -1374,6 +1396,12 @@ namespace jinjieapp
         #region 吹灰列表执行  30秒
         private void ChRun(DBHelper db)
         {
+            if (chmode.Equals("0"))
+            {
+                string sqlrun = "update dncchrunlist set OffTime='" + DateTime.Now + "',RunTime='"+ DateTime.Now + "',remarks='切换常规吹灰，强行停止执行',status=0,isdelete=1 where OffTime is null and RunTime is null and DncBoilerId="+bid;
+                db.CommandExecuteNonQuery(sqlrun);
+            }
+
 
             string sql = "select q.DncChqpointId,q.DncChqpoint_Name,p.DncChstatusId,q.Id from dncchrunlist q inner join dncchqpoint p on q.DncChqpointId=p.Id where q.DncBoilerId=" + bid + " and q.OffTime is null and q.RunTime is not null";
             var rdt = db.GetCommand(sql);
@@ -1699,7 +1727,16 @@ namespace jinjieapp
                             chqid = int.Parse(item1[0].ToString());
                             chqname = item1[1].ToString();
                             bname = item1[2].ToString();
-                            sql_runlist.Append("insert into dncchrunlist (Name_kw,AddTime,Remarks,Status,IsDeleted,DncChqpointId,DncChqpoint_Name,DncBoilerId,DncBoiler_Name) values ('" + chqname + "','" + realtime + "','" + rname + "',1,0," + chqid + ",'" + chqname + "'," + bid + ",'" + bname + "');");
+
+                            if (chmode.Equals("1"))
+                            {
+                                sql_runlist.Append("insert into dncchrunlist (Name_kw,AddTime,Remarks,Status,IsDeleted,DncChqpointId,DncChqpoint_Name,DncBoilerId,DncBoiler_Name) values ('" + chqname + "','" + realtime + "','" + rname + "',1,0," + chqid + ",'" + chqname + "'," + bid + ",'" + bname + "');");
+                            }
+                            else
+                            {
+                                sql_runlist.Append("insert into dncchrunlist (Name_kw,AddTime,RunTime,OffTime,Remarks,Status,IsDeleted,DncChqpointId,DncChqpoint_Name,DncBoilerId,DncBoiler_Name) values ('" + chqname + "','" + realtime + "','" + realtime + "','" + realtime + "','常规吹灰:" + rname + "',0,1," + chqid + ",'" + chqname + "'," + bid + ",'" + bname + "');");
+                            }
+                            
 
                         }
                         sql_runlist.Append("update dncchlist set Status=0 where DncBoilerId=" + bid + ";");
@@ -1729,7 +1766,15 @@ namespace jinjieapp
         }
         #endregion
 
-        
+        #region 获取吹灰模式  15秒
+        private string chmode = "0";
+        private string GetChMode(DBHelper db)
+        {
+            JToken ja2 = JinJieHttp("DMSBWZNSEL", "DV");
+            return ja2[0]["item"]["DV"].ToString();
+        }
+        #endregion
+
 
 
 
@@ -1758,8 +1803,15 @@ namespace jinjieapp
         private void button6_Click(object sender, EventArgs e)
         {
             DBHelper db = new DBHelper();
+
+            //chmode = GetChMode(db);
+
+
+
             //吹灰器状态更新
             RefreshState(db);
+
+
         }
         #endregion
 
@@ -1779,6 +1831,10 @@ namespace jinjieapp
         }
         #endregion
 
+
+        
+
+
         #region 调接口 （按钮事件）
         private void button7_Click(object sender, EventArgs e)
         {
@@ -1792,6 +1848,7 @@ namespace jinjieapp
             {
                 //todo
                 DBHelper db = new DBHelper();
+
                 WRLPoint(db);//realtime 赋值
 
                 //调接口读取并更新96个吹灰点的鳍片温度值和背火侧温度值 和 燃烧区域漆片温度
@@ -1965,5 +2022,9 @@ namespace jinjieapp
         {
             timer2.Stop();
         }
+
+
+
+
     }
 }
