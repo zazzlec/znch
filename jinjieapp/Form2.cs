@@ -2026,10 +2026,6 @@ namespace jinjieapp
         }
         #endregion
 
-
-
-
-
         #region 调接口 （按钮事件）
         private void button7_Click(object sender, EventArgs e)
         {
@@ -2294,7 +2290,6 @@ namespace jinjieapp
                 {
 
                     Znchrun(db);
-
                 }
 
 
