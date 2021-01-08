@@ -1609,6 +1609,24 @@ namespace jinjieapp
             {
                 throw new Exception("疏水程控调用失败！");
             }
+            else
+            {
+                bool b2 = JinJieHttpDo("ZHDRHSBWSQR", "DI", "0");
+                donum = 0;
+                while (!b2)
+                {
+                    b2 = JinJieHttpDo("ZHDRHSBWSQR", "DI", "0");
+                    ++donum;
+                    if (donum >= 5)
+                    {
+                        break;
+                    }
+                }
+                if (donum >= 5)
+                {
+                    throw new Exception("疏水信号解除失败！");
+                }
+            }
             return b;
         }
 
@@ -1765,14 +1783,32 @@ namespace jinjieapp
                     }
                     if (donum >= 5)
                     {
-                        throw new Exception("空预器吹灰调用程控失败！");
+                        throw new Exception("空预器吹灰程控信号发送失败！");
                     }
                     else
                     {
-                        sql = "update dncchrunlist_kyq set RunTime='" + realtime + "'  where DncBoilerId=" + bid + " and RunTime is null";
-                        db.CommandExecuteNonQuery(sql);
+                        bool b2 = JinJieHttpDo("ZHAPHSBWSQR", "DI", "0");
+                        donum = 0;
+                        while (!b2)
+                        {
+                            b2 = JinJieHttpDo("ZHAPHSBWSQR", "DI", "0");
+                            ++donum;
+                            if (donum >= 5)
+                            {
+                                break;
+                            }
+                        }
+                        if (donum >= 5)
+                        {
+                            throw new Exception( "空预器吹灰程控信号解除失败！");
+                        }
+                        else
+                        {
 
+                            sql = "update dncchrunlist_kyq set RunTime='" + realtime + "'  where DncBoilerId=" + bid + " and RunTime is null";
+                            db.CommandExecuteNonQuery(sql);
 
+                        }
 
                     }
 

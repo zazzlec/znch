@@ -1378,6 +1378,7 @@ namespace jinjieapp
                             bool b = DoShui();
                             if (b)
                             {
+
                                 c = "update dncboiler set Ss_sta='1' where id=" + bid;
                                 db.CommandExecuteNonQuery(c);
                             }
