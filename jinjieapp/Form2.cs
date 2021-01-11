@@ -147,6 +147,33 @@ namespace jinjieapp
         #endregion
 
         #region 基础
+
+        /// <summary>
+        /// 1、登录
+        /// 2、接口地址通了  3，通了但是数据读取出错
+        /// 101、接口不通
+        /// 102、数据读取返回错误（999）
+        /// 103、数据异常
+        /// 104、单吹指令发送不成功
+        /// 105、单吹指令未执行
+        /// 106、疏水指令发送不成功
+        /// 107、疏水指令未执行
+        /// 108、空预器汽源选择指令发送不成功
+        /// 109、空预器汽源选择指令未执行
+        /// 110、空预器程控吹灰指令发送不成功
+        /// 111、空预器程控吹灰未执行
+        /// 112、数据表更新错误
+        /// 113、数据库插入错误
+        /// 114  吹灰器状态异常
+        /// </summary>
+        /// <param name="db"></param>
+        /// <param name="contant"></param>
+        /// <param name="type"></param>
+        public static void AddLog(DBHelper db ,string contant, int type)
+        {
+            db.CommandExecuteNonQuery("insert into dnclog(K_Log_kw,LogTime,Type,WorkNum,Status,IsDeleted) values('"+contant+"',NOW(),"+type+",'miniapp',1,0);");
+        }
+
         public static void AddLgoToTXT(string logstring)
         {
             string path = AppDomain.CurrentDomain.BaseDirectory + "logs/log_" + DateTime.Now.ToString("yyyy-MM-dd") + ".txt";
@@ -385,6 +412,7 @@ namespace jinjieapp
                 }
                 else
                 {
+                    AddLog(db, "tag:"+ name + " 吹灰器状态异常", 114);
                     value = 999;
                 }
 
@@ -2232,6 +2260,7 @@ namespace jinjieapp
         private int c = 1;
         private void timer3_Tick(object sender, EventArgs e)
         {
+            c++;
             try
             {
                 //todo
@@ -2301,7 +2330,7 @@ namespace jinjieapp
                 //}
 
 
-                c++;
+                
 
             }
             catch (Exception rrr)

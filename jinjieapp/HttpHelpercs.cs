@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SynZnrs;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -155,12 +156,85 @@ namespace znrsserver
                     {
                         ipindex = 0;
                     }
-                    return HttpPostTk(geturl(), param);
+                    //return HttpPostTk(geturl(), param);
+
+                    string em = HttpPostTkRepeat(geturl(), param);
+                    if (!em.Equals("无法连接到远程服务器"))
+                    {
+                        if (em.Length == 0)
+                        {
+                            GetDb().CommandExecuteNonQuery("insert into dnclog(K_Log_kw,LogTime,Type,WorkNum,Status,IsDeleted) values('" + geturl() + " tk通了,数据异常，" + ret + "',NOW(),3,'miniapp',1,0);");
+                        }
+                        else
+                        {
+                            GetDb().CommandExecuteNonQuery("insert into dnclog(K_Log_kw,LogTime,Type,WorkNum,Status,IsDeleted) values('" + geturl() + " tk通了',NOW(),2,'miniapp',1,0);");
+                        }
+                    }
+                    return em;
                 }
             }
 
             return ret;
         }
+
+
+        public static string HttpPostTkRepeat(string postUrl, string param)
+        {
+            string ret = "";
+            try
+            {
+
+                //byte[] byteArray = Encoding.UTF8.GetBytes(paramData); //转化
+                HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(new Uri(postUrl));
+                webReq.Method = "POST";
+                webReq.Headers.Add("ContentType", "application/json");
+
+
+                webReq.ContentType = "application/json";
+                // byte[] btBodys = Encoding.UTF8.GetBytes(param.ToString());
+                //string a = "{\"account\": \"ics_data\",\"password\": \"e10adc3949ba59abbe56e057f20f883e\"}";
+                //  string a = param;
+                byte[] btBodys = Encoding.UTF8.GetBytes(param);
+                webReq.ContentLength = btBodys.Length;
+                //webReq.ContentLength = byteArray.Length;
+                Stream newStream = webReq.GetRequestStream();
+                newStream.Write(btBodys, 0, btBodys.Length);//写入参数
+                newStream.Close();
+                using (HttpWebResponse response = (HttpWebResponse)webReq.GetResponse())
+                {
+                    using (Stream responseStream = response.GetResponseStream())
+                    {
+                        using (StreamReader sReader = new StreamReader(responseStream, System.Text.Encoding.UTF8))
+                        {
+                            ret = sReader.ReadToEnd();
+                        }
+                    }
+
+                    JObject rt = (JObject)JsonConvert.DeserializeObject(ret);
+                    ret = rt["data"]["token"].ToString();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ret = ex.Message;
+                if (ret.Equals("无法连接到远程服务器"))
+                {
+                    ipindex++;
+                    if (ipindex > 2)
+                    {
+                        ipindex = 0;
+                    }
+                    //return HttpPostTk(geturl(), param);
+
+                    string em = HttpPostTkRepeat(geturl(), param);
+                    return em;
+                }
+            }
+
+            return ret;
+        }
+
 
         public static string HttpPost(string postUrl, string param)
         {
@@ -207,78 +281,88 @@ namespace znrsserver
                     {
                         ipindex = 0;
                     }
-                    return HttpPost(geturl(), param);
+                    string em= HttpPostRepeat(geturl(), param);
+                    if (!em.Equals("无法连接到远程服务器"))
+                    {
+                        if (em.Length==0)
+                        {
+                            GetDb().CommandExecuteNonQuery("insert into dnclog(K_Log_kw,LogTime,Type,WorkNum,Status,IsDeleted) values('" + geturl() + " 通了,数据异常，"+ ret + "',NOW(),3,'miniapp',1,0);");
+                        }
+                        else
+                        {
+                            GetDb().CommandExecuteNonQuery("insert into dnclog(K_Log_kw,LogTime,Type,WorkNum,Status,IsDeleted) values('" + geturl() + " 通了',NOW(),2,'miniapp',1,0);");
+                        }
+                    }
+                    return em;
                 }
             }
 
             return ret;
         }
-        //public static string HttpPost(string postUrl, string param,int k)
-        //{
-        //    string ret = "";
-        //    try
-        //    {
 
-        //        //byte[] byteArray = Encoding.UTF8.GetBytes(paramData); //转化
-        //        HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(new Uri(postUrl));
-        //        webReq.Method = "POST";
-        //        webReq.Headers.Add("ContentType", "application/json");
-        //        if (k==1)
-        //        {
-        //            if (string.IsNullOrEmpty(token))
-        //            {
-        //               token = gettoken();
-        //            }
-        //            webReq.Headers.Add("Authorization", token); 
-        //        }              
+        public static DBHelper db = null;
+        public static DBHelper GetDb()
+        {
+            if (db==null)
+            {
+                db = new DBHelper();
+            }
+            return db;
+        }
 
 
-        //         webReq.ContentType = "application/json";
-        //         // byte[] btBodys = Encoding.UTF8.GetBytes(param.ToString());
-        //         //string a = "{\"account\": \"ics_data\",\"password\": \"e10adc3949ba59abbe56e057f20f883e\"}";
-        //        //  string a = param;
-        //         byte[] btBodys = Encoding.UTF8.GetBytes(param);
-        //        webReq.ContentLength = btBodys.Length;
-        //        //webReq.ContentLength = byteArray.Length;
-        //        Stream newStream = webReq.GetRequestStream();
-        //        newStream.Write(btBodys, 0, btBodys.Length);//写入参数
-        //        newStream.Close();
-        //        using (HttpWebResponse response = (HttpWebResponse)webReq.GetResponse())
-        //        {
-        //            using (Stream responseStream = response.GetResponseStream())
-        //            {
-        //                using (StreamReader sReader = new StreamReader(responseStream, System.Text.Encoding.UTF8))
-        //                {
-        //                    ret = sReader.ReadToEnd();
-        //                }
-        //            }
-        //            if (k == 0)
-        //            {
-        //                JObject rt = (JObject)JsonConvert.DeserializeObject(ret);
+        public static string HttpPostRepeat(string postUrl, string param)
+        {
+            string ret = "";
+            try
+            {
+                string tk = gettoken();
+                //byte[] byteArray = Encoding.UTF8.GetBytes(paramData); //转化
+                HttpWebRequest webReq = (HttpWebRequest)WebRequest.Create(new Uri(gethost() + postUrl));
+                webReq.Method = "POST";
+                webReq.Headers.Add("ContentType", "application/json");
 
-        //                ret = rt["data"]["token"].ToString();
+                webReq.Headers.Add("Authorization", tk);
 
-        //            }
-        //        }
+                webReq.ContentType = "application/json";
+                // byte[] btBodys = Encoding.UTF8.GetBytes(param.ToString());
+                //string a = "{\"account\": \"ics_data\",\"password\": \"e10adc3949ba59abbe56e057f20f883e\"}";
+                //  string a = param;
+                byte[] btBodys = Encoding.UTF8.GetBytes(param);
+                webReq.ContentLength = btBodys.Length;
+                //webReq.ContentLength = byteArray.Length;
+                Stream newStream = webReq.GetRequestStream();
+                newStream.Write(btBodys, 0, btBodys.Length);//写入参数
+                newStream.Close();
+                using (HttpWebResponse response = (HttpWebResponse)webReq.GetResponse())
+                {
+                    using (Stream responseStream = response.GetResponseStream())
+                    {
+                        using (StreamReader sReader = new StreamReader(responseStream, System.Text.Encoding.UTF8))
+                        {
+                            ret = sReader.ReadToEnd();
+                        }
+                    }
+                }
 
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        ret = ex.Message;
-        //        if (ret.Equals("无法连接到远程服务器"))
-        //        {
-        //            ipindex++;
-        //            if (ipindex>2)
-        //            {
-        //                ipindex = 0;
-        //            }
-        //            return HttpPost(geturl(), param, k);
-        //        }
-        //    }
+            }
+            catch (Exception ex)
+            {
+                ret = ex.Message;
+                if (ret.Equals("无法连接到远程服务器"))
+                {
+                    ipindex++;
+                    if (ipindex > 2)
+                    {
+                        ipindex = 0;
+                    }
+                    string em = HttpPostRepeat(geturl(), param);
+                    return em;
+                }
+            }
 
-        //    return ret;
-        //}
-
+            return ret;
+        }
 
     }
 }

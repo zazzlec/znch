@@ -22,8 +22,24 @@ namespace ZNRS.Api.Utils
 
         //public static string DbType = "sql";
 
-
-
+        /// <summary>
+        /// 1 登录
+        /// </summary>
+        /// <param name="contant"></param>
+        /// <param name="by"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public static DncLog Log(string contant, string by, int type)
+        {
+            var entity = new DncLog();
+            entity.LogTime = DateTime.Now;
+            entity.Type = type;
+            entity.K_Log_kw = contant;
+            entity.WorkNum = by;
+            entity.IsDeleted = CommonEnum.IsDeleted.No;
+            entity.Status = CommonEnum.Status.Normal;
+            return entity;
+        }
 
         /// <summary>
         /// 发消息

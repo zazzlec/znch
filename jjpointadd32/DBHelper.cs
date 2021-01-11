@@ -24,6 +24,7 @@ namespace znrsserver
         {
             get
             {
+                
                 ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings["ConnectionString"];
                 string str = settings.ConnectionString;
                 return str;

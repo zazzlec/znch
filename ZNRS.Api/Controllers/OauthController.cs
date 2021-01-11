@@ -74,6 +74,8 @@ namespace ZNRS.Api.Controllers
                         response.SetFailed("账号已被禁用");
                         return Ok(response);
                     }
+                    DncLog log = ToolService.Log(user.DisplayName + ",登录系统", user.LoginName, 1);
+                    _dbContext.DncLog.Add(log);
                 }
                 var claimsIdentity = new ClaimsIdentity(new Claim[]
                     {
@@ -87,6 +89,9 @@ namespace ZNRS.Api.Controllers
                     new Claim("userType",((int)user.UserType).ToString())
                     });
                 var token = JwtBearerAuthenticationExtension.GetJwtAccessToken(_appSettings, claimsIdentity);
+
+
+                
 
                 response.SetData(token);
                 return Ok(response);
