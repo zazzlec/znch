@@ -2324,9 +2324,52 @@ namespace jinjieapp
 
         private void Button11_Click(object sender, EventArgs e)
         {
-            DBHelper db = DB();
-          //  AfterCH30(db);
-            JSWRL(db);
+            DBHelper db = new DBHelper();
+            string sql_point = "select Id,Pkks from dncchpointadd_js order by Id";
+            DataTable dt_pk = db.GetCommand(sql_point);
+            double value = 0d;
+            DateTime nowtime = DateTime.Now;
+            //JToken ja = JinJieHttp(dt_pk, "AV");
+            //List<string> arr = new List<string>();
+            //long timestamp = 0;
+            //for (int i = 0; i < ja.Count(); i++)
+            //{
+            //    var item = ja[i];
+            //    var name = item["tag"].ToString();
+            //    if (item["item"]["AV"] != null)
+            //    {
+
+            //        value = double.Parse(item["item"]["AV"].ToString());
+            //        if (value < 0 || value > 2000)
+            //        {
+            //            value = 0;
+            //        }
+
+            //        timestamp = long.Parse(item["item"]["timestamp"].ToString());//锦界环境
+            //        nowtime = ConvertLongToDateTime(timestamp);//锦界环境
+            //    }
+            //    else
+            //    {
+            //        value = 0;
+            //    }
+
+
+            //    string sql_up_pvalue = "update dncchpointadd_js set Pvalue=" + value + ",Realtime='" + nowtime + "' where Pkks='" + name + "';";
+            //    arr.Add(sql_up_pvalue);
+
+            //}
+            //db.ExecuteTransaction(arr);
+            sql_point = "select Pvalue from dncchpointadd_js order by Id";
+            dt_pk = db.GetCommand(sql_point);
+
+            string sql_insert = "insert into dncchpointadddata (Realtime,P1,P2,P3,P4,P5,P6,P7,P8,P9,P10,P11,P12,P13,P14,P15,P16,P17,P18,P19,P20,P21,P22,P23,P24,P25,P26,P27,P28,P29,P30,P31,P32,Fh) values ('" + nowtime + "',";
+            foreach (DataRow item in dt_pk.Rows)
+            {
+                value = double.Parse(item[0].ToString());
+                sql_insert += value + ",";
+            }
+            sql_insert = sql_insert.Substring(0, sql_insert.Length - 1) + ")";
+            db.CommandExecuteNonQuery(sql_insert);
         }
     }
 }
