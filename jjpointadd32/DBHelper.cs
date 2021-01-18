@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MySqlConnector;
+using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Configuration;
@@ -7,13 +8,22 @@ using System.Data;
 using System.Linq;
 using System.Net;
 using System.Text;
-using MySqlConnector;
 
-namespace znrsserver
+
+namespace SynZnrs
 {
     public class DBHelper
     {
+        //连接地址：sqlpaas1400
+        //数据库名：SBWLZNRS
+        //用户名：sbwl_ZNRS
+        //密码：105*sbwlZNRS*
+        //"Data Source=sqlpaas1400; Initial Catalog=SBWLZNRS;User Id=sbwl_ZNRS; PassWord=105*sbwlZNRS*;"
 
+        private string m_dbs = "Data Source=127.0.0.1;Database=sg_znrs_ch;User ID=root;Password=123456;pooling=true;CharSet=utf8;port=3306;sslmode=none";//锦界现场
+
+        //private string m_dbs = "Data Source=127.0.0.1;Database=sg_znrs_ch;User ID=root;Password=123;pooling=true;CharSet=utf8;port=3306;sslmode=none";
+        // private string m_dbs = "Data Source=localhost; Initial Catalog=sg_znrs;User Id=sa; PassWord=123;";
         /// <summary>
         /// 构造函数
         /// </summary>
@@ -22,13 +32,8 @@ namespace znrsserver
 
         public string ConnectString
         {
-            get
-            {
-                
-                ConnectionStringSettings settings = ConfigurationManager.ConnectionStrings["ConnectionString"];
-                string str = settings.ConnectionString;
-                return str;
-            }
+            get { return m_dbs; }
+            set { m_dbs = value; }
         }
 
         /// <summary>
@@ -79,11 +84,11 @@ namespace znrsserver
         {
             string err = "";
             int ret = 0;
-            if (string.IsNullOrEmpty(ConnectString))
+            if (string.IsNullOrEmpty(m_dbs))
             {
                 return -1;
             }
-            using (MySqlConnection dbc = new MySqlConnection(ConnectString))
+            using (MySqlConnection dbc = new MySqlConnection(m_dbs))
             {
                 MySqlCommand insert = new MySqlCommand(commandStr, dbc);
 
@@ -221,13 +226,13 @@ namespace znrsserver
         /// <returns>受影响的行数</returns>
         public int CommandExecuteNonQuery(string commandstr)
         {
-            if (string.IsNullOrEmpty(ConnectString) || string.IsNullOrEmpty(commandstr))
+            if (string.IsNullOrEmpty(m_dbs) || string.IsNullOrEmpty(commandstr))
             {
                 return -1;
             }
             string err = "";
             int result = 0;
-            using (MySqlConnection dbc = new MySqlConnection(ConnectString))
+            using (MySqlConnection dbc = new MySqlConnection(m_dbs))
             {
                 MySqlCommand command = new MySqlCommand(commandstr, dbc);
                 try
@@ -297,13 +302,13 @@ namespace znrsserver
         /// <returns>数据表</returns>
         public DataTable GetCommand(string selectstr)
         {
-            if (string.IsNullOrEmpty(ConnectString))
+            if (string.IsNullOrEmpty(m_dbs))
             {
                 return null;
             }
             DataTable table = new DataTable();
             string err = "";
-            using (MySqlConnection dbc = new MySqlConnection(ConnectString))
+            using (MySqlConnection dbc = new MySqlConnection(m_dbs))
             {
                 try
                 {
@@ -334,22 +339,24 @@ namespace znrsserver
         /// <returns>事务是否成功执行</returns>
         public bool ExecuteTransaction(List<string> commands)
         {
-            if (string.IsNullOrEmpty(ConnectString) || commands == null)
+            if (string.IsNullOrEmpty(m_dbs) || commands == null)
             {
                 return false;
             }
 
             string err = "";
             bool ret = false;
-            using (MySqlConnection dbc = new MySqlConnection(ConnectString))
+            using (MySqlConnection dbc = new MySqlConnection(m_dbs))
             {
                 dbc.Open();
                 using (MySqlTransaction transaction = dbc.BeginTransaction())
                 {
+                    string commandstr1 = "";
                     try
                     {
                         foreach (string commandstr in commands)
                         {
+                            commandstr1 = commandstr;
                             MySqlCommand command = new MySqlCommand(commandstr, dbc);
                             command.Transaction = transaction;
                             command.ExecuteNonQuery();
@@ -421,24 +428,6 @@ namespace znrsserver
             else
             {
                 return ret;
-            }
-        }
-        /// <summary>
-        /// 传入SQL查询语句，返回是否查询到结果
-        /// </summary>
-        /// <param name="sql"></param>
-        /// <returns></returns>
-        public int Readcommand(string sql)
-        {
-            DBHelper db = new DBHelper();
-            DataTable dt = db.GetCommand(sql);
-            if (dt != null && dt.Rows.Count > 0)
-            {
-                return dt.Rows.Count;
-            }
-            else
-            {
-                return 0;
             }
         }
     }
