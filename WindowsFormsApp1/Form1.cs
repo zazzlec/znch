@@ -11,6 +11,9 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using wind;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
+
 
 namespace WindowsFormsApp1
 {
@@ -821,27 +824,31 @@ namespace WindowsFormsApp1
 
         private void button9_Click(object sender, EventArgs e)
         {
-            string csvpath = System.AppDomain.CurrentDomain.BaseDirectory;
-            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
-            using (var stream = System.IO.File.Open(csvpath + "DCS.xlsx", FileMode.Open, FileAccess.Read))
-            {
-                using (var reader = ExcelReaderFactory.CreateReader(stream))
-                {
-                    StreamWriter sw = new StreamWriter(csvpath + "sql.txt");
+            JObject jobj = JObject.Parse("{a:[1,2,3],b:{qwe:123,ert:456}}");
+            JToken result = jobj as JToken;
+            string s = result["b"].ToString();
+            MessageBox.Show(s);
+            //string csvpath = System.AppDomain.CurrentDomain.BaseDirectory;
+            //System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            //using (var stream = System.IO.File.Open(csvpath + "DCS.xlsx", FileMode.Open, FileAccess.Read))
+            //{
+            //    using (var reader = ExcelReaderFactory.CreateReader(stream))
+            //    {
+            //        StreamWriter sw = new StreamWriter(csvpath + "sql.txt");
 
-                    while (reader.Read())
-                    {
-                        if (reader.GetString(0)=="")
-                        {
-                            break;
-                        }
-                        string sql = "alter table dncchpointadddata add COLUMN "+ reader.GetString(0) + " double DEFAULT 0 COMMENT '"+ reader.GetString(1) + "';";
-                        sw.WriteLine(sql);
-                    }
-                    sw.Flush();
-                    sw.Close();
-                }
-            }
+            //        while (reader.Read())
+            //        {
+            //            if (reader.GetString(0)=="")
+            //            {
+            //                break;
+            //            }
+            //            string sql = "alter table dncchpointadddata add COLUMN "+ reader.GetString(0) + " double DEFAULT 0 COMMENT '"+ reader.GetString(1) + "';";
+            //            sw.WriteLine(sql);
+            //        }
+            //        sw.Flush();
+            //        sw.Close();
+            //    }
+            //}
             MessageBox.Show("ok");
         }
 

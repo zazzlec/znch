@@ -44,6 +44,20 @@ namespace jjpointadd32
             }
         }
 
+        public static void AddLgoToTXT2(string logstring)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "logs/test_log_" + DateTime.Now.ToString("yyyy-MM-dd") + ".txt";
+            if (!System.IO.File.Exists(path))
+            {
+                FileStream stream = System.IO.File.Create(path);
+                stream.Close();
+                stream.Dispose();
+            }
+            using (StreamWriter writer = new StreamWriter(path, true))
+            {
+                writer.WriteLine(logstring);
+            }
+        }
         /// <summary>        
         /// 时间戳转为C#格式时间        
         /// </summary>        
