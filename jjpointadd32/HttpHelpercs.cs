@@ -10,6 +10,21 @@ namespace znrsserver
 {
     public class HttpHelpercs
     {
+
+        public static void AddLgoToTXT(string logstring)
+        {
+            string path = AppDomain.CurrentDomain.BaseDirectory + "logs/log_" + DateTime.Now.ToString("yyyy-MM-dd") + ".txt";
+            if (!System.IO.File.Exists(path))
+            {
+                FileStream stream = System.IO.File.Create(path);
+                stream.Close();
+                stream.Dispose();
+            }
+            using (StreamWriter writer = new StreamWriter(path, true))
+            {
+                writer.WriteLine(logstring);
+            }
+        }
         public static string HttpGet(string url)
         {
             string result = "";
@@ -68,11 +83,15 @@ namespace znrsserver
         public static string token="";
         public static string account = "znch003";//登录账号，需要赋值
         public static string password = "shglznch";//登录密码，需要赋值
-        public static string url = "http://132.0.6.80:8721";//接口地址，需要赋值
-        // public static string url = "http://132.0.5.80:8721";//接口地址，需要赋值
-        public static int ipindex = 0;
+
         //public static int bid = 5;
+        //public static string url = "http://132.0.5.80:8721";//接口地址，需要赋值
+
         public static int bid = 6;
+        public static string url = "http://132.0.6.80:8721";//接口地址，需要赋值
+        public static int ipindex = 0;
+
+       
         public static string qz = "132.0";
         public static string dk = "8721";
         public static string[] host = { "80","81","82" };
@@ -211,6 +230,7 @@ namespace znrsserver
                 }
             }
 
+          //  AddLgoToTXT(DateTime.Now.ToString() + ": "+ host.ToString());
             return ret;
         }
         //public static string HttpPost(string postUrl, string param,int k)
