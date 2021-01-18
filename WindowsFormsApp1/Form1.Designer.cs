@@ -46,6 +46,7 @@
             this.timerState = new System.Windows.Forms.Timer(this.components);
             this.timer5 = new System.Windows.Forms.Timer(this.components);
             this.timer6 = new System.Windows.Forms.Timer(this.components);
+            this.button9 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // timer1
@@ -186,11 +187,22 @@
             this.timer6.Interval = 10000;
             this.timer6.Tick += new System.EventHandler(this.timer6_Tick);
             // 
+            // button9
+            // 
+            this.button9.Location = new System.Drawing.Point(211, 310);
+            this.button9.Name = "button9";
+            this.button9.Size = new System.Drawing.Size(181, 58);
+            this.button9.TabIndex = 9;
+            this.button9.Text = "button9";
+            this.button9.UseVisualStyleBackColor = true;
+            this.button9.Click += new System.EventHandler(this.button9_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(413, 539);
+            this.Controls.Add(this.button9);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.button7);
             this.Controls.Add(this.button5);
@@ -226,6 +238,7 @@
         private System.Windows.Forms.Timer timerState;
         private System.Windows.Forms.Timer timer5;
         private System.Windows.Forms.Timer timer6;
+        private System.Windows.Forms.Button button9;
     }
 }
 

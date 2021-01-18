@@ -1,11 +1,14 @@
-﻿using SynZnrs;
+﻿using ExcelDataReader;
+using SynZnrs;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using wind;
 
@@ -814,6 +817,38 @@ namespace WindowsFormsApp1
             sql = "update dncchqpoint set updown=-1 where DncBoilerId=" + bid + " and id in (select DncChqpointId from dncchrunlist where DncBoilerId=" + bid + "   and Status=1 and IsDeleted=0 and RunTime is not null and OffTime is not null )";
             arr.Add(sql);
             db.ExecuteTransaction(arr);
+        }
+
+        private void button9_Click(object sender, EventArgs e)
+        {
+            string csvpath = System.AppDomain.CurrentDomain.BaseDirectory;
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            using (var stream = System.IO.File.Open(csvpath + "DCS.xlsx", FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    StreamWriter sw = new StreamWriter(csvpath + "sql.txt");
+
+                    while (reader.Read())
+                    {
+                        if (reader.GetString(0)=="")
+                        {
+                            break;
+                        }
+                        string sql = "alter table dncchpointadddata add COLUMN "+ reader.GetString(0) + " double DEFAULT 0 COMMENT '"+ reader.GetString(1) + "';";
+                        sw.WriteLine(sql);
+                    }
+                    sw.Flush();
+                    sw.Close();
+                }
+            }
+            MessageBox.Show("ok");
+        }
+
+        public string UnicodeToString(string value)
+        {
+            return new Regex(@"\\u([0-9A-F]{4})", RegexOptions.IgnoreCase | RegexOptions.Compiled).Replace(
+                  value, x => string.Empty + Convert.ToChar(Convert.ToUInt16(x.Result("$1"), 16)));
         }
     }
 

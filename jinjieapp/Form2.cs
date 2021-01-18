@@ -1,4 +1,5 @@
 ﻿
+using ExcelDataReader;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SynZnrs;
@@ -10,6 +11,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using ZNRS.Api.dataoperate;
@@ -2399,6 +2401,40 @@ namespace jinjieapp
             }
             sql_insert = sql_insert.Substring(0, sql_insert.Length - 1) + ")";
             db.CommandExecuteNonQuery(sql_insert);
+        }
+
+        private void button12_Click(object sender, EventArgs e)
+        {
+            string csvpath = System.AppDomain.CurrentDomain.BaseDirectory;
+            System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+            using (var stream = System.IO.File.Open(csvpath+ "DCS.xlsx", FileMode.Open, FileAccess.Read))
+            {
+                using (var reader = ExcelReaderFactory.CreateReader(stream))
+                {
+                    int i = 0;
+
+                    StreamWriter sw = new StreamWriter(csvpath + "sql.txt");
+
+                    while (reader.Read())
+                    {
+                        i++;
+                        if (i==2)
+                        {
+                            for (int j = 0; j < reader.FieldCount; j++)
+                            {
+                                //dic.Add(reader.GetString(j), j);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        public string UnicodeToString(string value)
+        {
+            return new Regex(@"\\u([0-9A-F]{4})", RegexOptions.IgnoreCase | RegexOptions.Compiled).Replace(
+                  value, x => string.Empty + Convert.ToChar(Convert.ToUInt16(x.Result("$1"), 16)));
         }
     }
 }
