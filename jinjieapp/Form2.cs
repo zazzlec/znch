@@ -1703,7 +1703,7 @@ namespace jinjieapp
                     string sql = "update dncchrunlist set RunTime='" + DateTime.Now + "'  where Id=" + id;
                     db.CommandExecuteNonQuery(sql);
 
-                    var timerClose = new System.Threading.Timer(new TimerCallback(backcall), new List<string>() { pid, tag, pmode, id, Name_kw }, 30000, 0);
+                    timerClose = new System.Threading.Timer(new TimerCallback(backcall), new List<string>() { pid, tag, pmode, id, Name_kw }, 30000, 0);
                 }
 
                
